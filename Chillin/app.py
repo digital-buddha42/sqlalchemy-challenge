@@ -51,7 +51,7 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
+        f"/api/v1.0/start_date<br/>"
         f"/api/v1.0/start_date/end_date<br/>"
 
     )
@@ -152,13 +152,39 @@ def tobs():
     return jsonify(temp_list)
 
 
+@app.route("/api/v1.0/<start_date>")
+def get_date(start_date):
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    # Query the minimum temperature, the average temperature, 
+    # and the maximum temperature for a specified start or start-end range
+
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs),
+                            func.max(Measurement.tobs)) \
+        .filter(Measurement.date >= start_date).all()
+
+    session.close()
+
+    # Create a dictionary from the row data and append to a list of all_passengers
+    all_temp_metrics = []
+    for min_tobs, avg_tobs, max_tobs in results:
+        temp_metrics_dict = {}
+        temp_metrics_dict["min"] = min_tobs
+        temp_metrics_dict["avg"] = avg_tobs
+        temp_metrics_dict["max"] = max_tobs
+        all_temp_metrics.append(temp_metrics_dict)
+
+    return jsonify(all_temp_metrics)
+
+
+
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def get_dates(start_date, end_date):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    """Return a list of passenger data between an age range"""
-    # Query all minimum temperature, the average temperature, 
+    # Query the minimum temperature, the average temperature, 
     # and the maximum temperature for a specified start or start-end range
 
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
