@@ -53,7 +53,6 @@ def welcome():
         f"/api/v1.0/tobs<br/>"
         f"/api/v1.0/start_date<br/>"
         f"/api/v1.0/start_date/end_date<br/>"
-
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -151,7 +150,6 @@ def tobs():
     # Return the JSON representation of your dictionary.
     return jsonify(temp_list)
 
-
 @app.route("/api/v1.0/<start_date>")
 def get_date(start_date):
     # Create our session (link) from Python to the DB
@@ -166,7 +164,7 @@ def get_date(start_date):
 
     session.close()
 
-    # Create a dictionary from the row data and append to a list of all_passengers
+    # Create a dictionary from the row data and append to a list of all_temp_metrics
     all_temp_metrics = []
     for min_tobs, avg_tobs, max_tobs in results:
         temp_metrics_dict = {}
@@ -176,8 +174,6 @@ def get_date(start_date):
         all_temp_metrics.append(temp_metrics_dict)
 
     return jsonify(all_temp_metrics)
-
-
 
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def get_dates(start_date, end_date):
@@ -195,7 +191,7 @@ def get_dates(start_date, end_date):
 
     session.close()
 
-    # Create a dictionary from the row data and append to a list of all_passengers
+    # Create a dictionary from the row data and append to a list of all_temp_metrics
     all_temp_metrics = []
     for min_tobs, avg_tobs, max_tobs in results:
         temp_metrics_dict = {}
@@ -205,8 +201,6 @@ def get_dates(start_date, end_date):
         all_temp_metrics.append(temp_metrics_dict)
 
     return jsonify(all_temp_metrics)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
